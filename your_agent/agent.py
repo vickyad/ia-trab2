@@ -9,9 +9,10 @@ import sys
 # do seu agente.
 
 
-def minimax_alphabeta(original_state, current_board: board.Board, color: str, depth: int, is_max_turn=True):
+def minimax_alphabeta(original_state, current_board: board.Board, color: str, depth: int, alpha, beta, is_max_turn=True):
     global move
     print('Entrei na função minimax')
+    print(f'Profundidade: {depth}')
     print('Board atual:')
     current_board.print_board()
 
@@ -23,38 +24,42 @@ def minimax_alphabeta(original_state, current_board: board.Board, color: str, de
     print(f'Sucessores {successors}')
     if is_max_turn:
         print('Vez do MAX')
-        v = - sys.maxunicode
         for s in successors:
             print(f'Avaliando: {s}')
             current_board.process_move(s, color)
             current_board.print_board()
-            new_v = minimax_alphabeta(original_state, current_board, current_board.opponent(color), depth - 1, False)
-            print(f'New_v: {new_v} do {s}')
-            if new_v > v:
-                v = new_v
+            v = minimax_alphabeta(original_state, current_board, current_board.opponent(color), depth - 1, alpha, beta, False)
+            print(f'New_v: {v} do {s}')
+            if v > alpha:
+                alpha = v
                 move = s
-            print(f'V: {v} do {s}')
-        return v
+            print(f'V: {alpha} do {s}')
+            if beta <= alpha:
+                break
+        return alpha
     else:
         print('Vez do MIN')
-        v = sys.maxunicode
         for s in successors:
             print(f'Avaliando: {s}')
             current_board.process_move(s, color)
             current_board.print_board()
-            new_v = minimax_alphabeta(original_state, current_board, current_board.opponent(color), depth - 1, True)
-            print(f'New_v: {new_v} do {s}')
+            v = minimax_alphabeta(original_state, current_board, current_board.opponent(color), depth - 1, alpha, beta, True)
+            print(f'New_v: {v} do {s}')
 
-            if new_v < v:
-                v = new_v
+            if v < beta:
+                beta = v
                 move = s
-            print(f'V: {v} do {s}')
-        return v
+            print(f'V: {beta} do {s}')
+            if alpha >= beta:
+                break
+        return beta
 
 
 def pieces_diff(original_board_tiles, current_board_tiles, color):
     print('Fazendo os calculos com')
+    print('Original:')
     print(original_board_tiles)
+    print('Atual:')
     print(current_board_tiles)
     ob_tile_count = 0
     for line in original_board_tiles:
@@ -74,8 +79,10 @@ def make_move(the_board, color):
     :param color: a character indicating the color to make the move ('B' or 'W')
     :return: (int, int) tuple with x, y indexes of the move (remember: 0 is the first row/column)
     """
-    # o codigo abaixo apenas retorna um movimento aleatorio valido para
-    # a primeira jogada com as pretas.
-    # Remova-o e coloque a sua implementacao da poda alpha-beta
-    minimax_alphabeta({'board': copy.deepcopy(the_board.tiles), 'player': color}, the_board, color, 4)
+    if not the_board.legal_moves(color):
+        return -1, -1
+    original_state = {'board': copy.deepcopy(the_board.tiles), 'player': color}
+    alpha = - sys.maxunicode
+    beta = sys.maxunicode
+    minimax_alphabeta(original_state, the_board, color, 40, alpha, beta)
     return move

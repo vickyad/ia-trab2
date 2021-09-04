@@ -5,4 +5,4 @@ import board
 
 if __name__ == '__main__':
     initial_board = board.Board()
-    print(nha.make_move(initial_board, 'B'))
+    print(f'Retorno: {nha.make_move(initial_board, "B")}')
