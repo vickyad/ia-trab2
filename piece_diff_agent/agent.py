@@ -9,7 +9,7 @@ import sys
 # do seu agente.
 
 
-def minimax_alphabeta(original_state, current_board: board.Board, color: str, depth: int, alpha, beta, min_moves=0, max_moves=0, is_max_turn=True):
+def minimax_alphabeta(original_state, current_board: board.Board, color: str, depth: int, alpha, beta, is_max_turn=True):
     global move
     print('Entrei na função minimax')
     print(f'Profundidade: {depth}')
@@ -19,19 +19,16 @@ def minimax_alphabeta(original_state, current_board: board.Board, color: str, de
     if current_board.is_terminal_state() or depth == 0:
         print('Hora da decisão')
         print(f'Depth: {depth} // Estado terminal? {current_board.is_terminal_state()}')
-        # return mobility_heuristic(min_moves, max_moves)
-        return corners_heuristic(max_moves, min_moves)
+        return pieces_diff(original_state['board'], current_board.tiles, original_state['player'])
     successors = current_board.legal_moves(color)
     print(f'Sucessores {successors}')
     if is_max_turn:
-        # max_moves += len(successors)
         print('Vez do MAX')
         for s in successors:
             print(f'Avaliando: {s}')
             current_board.process_move(s, color)
-            max_moves = calculate_corners(current_board.tiles, color)
             current_board.print_board()
-            v = minimax_alphabeta(original_state, current_board, current_board.opponent(color), depth - 1, alpha, beta, min_moves, max_moves, False)
+            v = minimax_alphabeta(original_state, current_board, current_board.opponent(color), depth - 1, alpha, beta, False)
             print(f'New_v: {v} do {s}')
             if v > alpha:
                 alpha = v
@@ -41,14 +38,12 @@ def minimax_alphabeta(original_state, current_board: board.Board, color: str, de
                 break
         return alpha
     else:
-        # min_moves += len(successors)
         print('Vez do MIN')
         for s in successors:
             print(f'Avaliando: {s}')
             current_board.process_move(s, color)
-            min_moves = calculate_corners(current_board.tiles, color)
             current_board.print_board()
-            v = minimax_alphabeta(original_state, current_board, current_board.opponent(color), depth - 1, alpha, beta, min_moves, max_moves, True)
+            v = minimax_alphabeta(original_state, current_board, current_board.opponent(color), depth - 1, alpha, beta, True)
             print(f'New_v: {v} do {s}')
 
             if v < beta:
@@ -60,29 +55,21 @@ def minimax_alphabeta(original_state, current_board: board.Board, color: str, de
         return beta
 
 
-def mobility_heuristic(min_moves, max_moves):
-    if min_moves + max_moves == 0:
-        return 0
-    return 100 * (max_moves - min_moves)/ (max_moves + min_moves)
-
-
-def calculate_corners(current_board_tiles, color):
-    player_corner = 0
-    if current_board_tiles[0][0] == color:
-        player_corner += 1
-    if current_board_tiles[0][7] == color:
-        player_corner += 1
-    if current_board_tiles[7][0] == color:
-        player_corner += 1
-    if current_board_tiles[7][7] == color:
-        player_corner += 1
-    return player_corner
-
-
-def corners_heuristic(max_corners, min_corners):
-    if max_corners + min_corners == 0:
-        return 0
-    return 100 * (max_corners - min_corners) / (max_corners + min_corners)
+def pieces_diff(original_board_tiles, current_board_tiles, color):
+    print('Fazendo os calculos com')
+    print('Original:')
+    print(original_board_tiles)
+    print('Atual:')
+    print(current_board_tiles)
+    ob_tile_count = 0
+    for line in original_board_tiles:
+        ob_tile_count += line.count(color)
+    cb_tile_count = 0
+    for line in current_board_tiles:
+        cb_tile_count += line.count(color)
+    print(f'Quantidade de {color} no original board: {ob_tile_count}')
+    print(f'Quantidade de {color} na table atual: {cb_tile_count}')
+    return ob_tile_count - cb_tile_count
 
 
 def make_move(the_board, color):
