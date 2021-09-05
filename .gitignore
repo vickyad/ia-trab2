@@ -1,4 +1,6 @@
 venv/
-history.txt
 __pycache__/
+*/__pycache__/
 
+results.xml
+history.txt
