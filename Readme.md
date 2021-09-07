@@ -1,47 +1,61 @@
-# Servidor de Othello
+# Trabalho Prático 1
+## Alunos
+* 00303397 - João Pedro Silveira e Silva (turma A)
+* 00314280 - Rafael Humann Petry (turma A)
+* 00302072 - Victória de Avelar Duarte (turma A)
 
-Este arquivo contem instruções simples para execução do servidor e do jogador 'random'.
+## Função de avaliação
+Usamos as heurísticas de estabilidade e de mobilidade em conjunto. 
+A proporção utilizada foi:
 
-## Requisitos
-O servidor foi testado em uma máquina GNU/Linux (Ubuntu, mais precisamente) com
-o interpretador python 3.7.7
+`0.8 * heuristica_de_estabilidade + 0.2 * heuristica_de_mobilidade`
 
-## Instruções
+### Estabilidade
+Foi construída uma matriz indicando qual o peso associado a cada posição do
+tabuleiro. Os valores positivos são os valores que favorecem o jogador e, os 
+negativos, são os que favorecem o oponente.
+```
+__POINT_MAP = [
+    [120, -20, 20, 5, 5, 20, -20, 120],
+    [-20, -40, -5, -5, -5, -5, -40, -20],
+    [20, -5, 15, 3, 3, 15, -5, 20],
+    [5, -5, 3, 3, 3, 3, -5, 5],
+    [5, -5, 3, 3, 3, 3, -5, 5],
+    [20, -5, 15, 3, 3, 15, -5, 20],
+    [-20, -40, -5, -5, -5, -5, -40, -20],
+    [120, -20, 20, 5, 5, 20, -20, 120],
+]
+```
+Os valores foram retirados de https://www.ic.unicamp.br/~rocha/teaching/2011s2/mc906/seminarios/2011s2-mc906-seminario-04.pdf
 
-Para iniciar uma partida de Othello, digite no terminal:
+Com a matriz definida, dado um tabuleiro, calcula-se o valor associado a 
+cada jogador com base na posição de cada peça com um somatório
 
-python server.py [-h] [-d delay] [-l log-history] player1 player2
+```
+pontos_jogador = 0
+pontos_oponente = 0
 
-Onde 'player(1 ou 2)' são os diretórios onde estão os agent.py dos jogadores.
-Os argumentos entre colchetes são opcionais, seu significado é descrito a seguir:
+para cada peça dentro de um tabuleiro:
+    se jogador:
+        pontos_jogador += __POINT_MAP[posição_peça]
+    se oponente:
+        pontos_oponente += __POINT_MAP[posição_peça]
+retorna pontos_jogador - pontos_oponente
+```
 
--h, --help            Mensagem de ajuda
--d delay, --delay delay
-                    Tempo alocado para os jogadores realizarem a jogada (default=5s)
--l log-history, --log-history log-history
-                    Arquivo que conterá registro simples de jogadas (default=history.txt)
--o output-file, --output-file output-file
-                    Arquivo que conterá detalhes do jogo (incluindo registro de jogadas)
+### Mobilidade
+A cada tabuleiro, é calculada todas as possibilidades de movimento para cada 
+jogador
+```
+se movimentos_MAX_player + movimentos_MIN_player == 0:
+	heuristica = 0
+senão:
+	heuristica = 100 * (movimentos_MAX_player - movimentos_MIN_player) / (movimentos_MAX_player + movimentos_MIN_player)
+```
 
-## Jogador random
-O jogador 'random' se localiza no diretório randomplayer. Para jogar uma partida com ele,
-basta substituir diretorio_player1 e/ou 2 por randomplayer. Como exemplo, inicie
-uma partida random vs. random para ver o servidor funcionando:
+## Bibliografia
+https://pt.wikipedia.org/wiki/Minimax
 
-python server.py randomplayer randomplayer
+https://kartikkukreja.wordpress.com/2013/03/30/heuristic-function-for-reversiothello/
 
-Você verá o tabuleiro se preenchendo quase instantaneamente porque o jogador random é muito rápido (e muito incompetente).
-
-## Funcionamento
-
-Iniciando pelo player1, que jogará com as peças pretas, o servidor cria o objeto Board e chama o make_move do agent.py dentro do diretório do player 1.
-
-O make_move deve retornar as coordenadas x, y da jogada. O servidor as recebe, processa, e repete o procedimento para o próximo jogador, com o estado atualizado.
-
-# Notas
-* O servidor checa a legalidade das jogadas antes de efetivá-las. 
-* Você pode usar as funções da classe Board como auxílio para obter as jogadas válidas, além de outras facilidades.
-* Jogadas ilegais repetidas vezes resultam em desqualificação.
-* Timeout resulta em perda da vez (o que é uma desvantagem no jogo)
-* Em caso de problemas com o servidor, por favor avise via moodle ou discord.
-"# ia-trab2" 
+https://www.ic.unicamp.br/~rocha/teaching/2011s2/mc906/seminarios/2011s2-mc906-seminario-04.pdf
