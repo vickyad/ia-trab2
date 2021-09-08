@@ -174,7 +174,7 @@ def __mixed_heuristic(state: GameState) -> int:
 
     point_map_heuristic_result = __point_map_heuristic(state)
     mobility_heuristic_result = __mobility_heuristic(state)
-    return point_map_heuristic_result * 0.3 + mobility_heuristic_result * 0.7
+    return point_map_heuristic_result * 0.4 + mobility_heuristic_result * 0.6
 
 
 def __count_empty_values(state: GameState):
