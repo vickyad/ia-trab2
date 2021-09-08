@@ -8,7 +8,7 @@
 Usamos as heurísticas de estabilidade e de mobilidade em conjunto. 
 A proporção utilizada foi:
 
-`0.8 * heuristica_de_estabilidade + 0.2 * heuristica_de_mobilidade`
+`0.4 * heuristica_de_estabilidade + 0.6 * heuristica_de_mobilidade`
 
 ### Estabilidade
 Foi construída uma matriz indicando qual o peso associado a cada posição do
