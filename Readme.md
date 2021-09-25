@@ -1,4 +1,4 @@
-# Trabalho Prático 1
+# Trabalho Prático 2
 ## Alunos
 * 00303397 - João Pedro Silveira e Silva (turma A)
 * 00314280 - Rafael Humann Petry (turma A)
