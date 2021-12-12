@@ -1,4 +1,6 @@
 # Trabalho Prático 2
+Trabalho campeão do torneio realizado entre a turma em 2021/2.
+
 ## Alunos
 * 00303397 - João Pedro Silveira e Silva (turma A)
 * 00314280 - Rafael Humann Petry (turma A)
